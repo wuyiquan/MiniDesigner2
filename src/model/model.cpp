@@ -17,7 +17,7 @@ object::object()
 
 objectList::objectList()
 {
-    listPtr = std::make_shared<std::vector<object*> >();
+    listPtr = std::make_shared<std::vector<std::shared_ptr<object> > >();
     (*listPtr).clear();
 }
 
@@ -128,7 +128,7 @@ std::shared_ptr<QString> object::getObjectText()
     return text;
 }
 
-bool cmp(const object* x,const object* y)
+bool cmp(const std::shared_ptr<object> x,const std::shared_ptr<object> y)
 {
     if(*(x->level) != *(y->level)) return *(x->level) < *(y->level);
     if(*(x->depth) != *(y->depth)) return *(x->depth) < *(y->depth);
@@ -140,14 +140,14 @@ void objectList::sort()
     std::sort((*listPtr).begin(),(*listPtr).end(),cmp);
 }
 
-/*void objectList::setObjectPosOff(int id,int x,int y)
+void objectList::setObjectPosOff(int id,int x,int y)
 {
-    for(auto &i:list)
+    for(auto &i:*listPtr)
     {
-        if(i->id==id)
+        if(*(i->id)==id)
         {
-            i->x+=x;
-            i->y+=y;
+            *(i->x)+=x;
+            *(i->y)+=y;
             for(auto &j:i->subObject)
             {
                 this->setObjectPosOff(j,x,y);
@@ -155,7 +155,7 @@ void objectList::sort()
         }
     }
     changeNoti->type=NOTIFI_ATTR_CHANGED;
-}*/
+}
 
 void objectList::setChangeNoti(const std::shared_ptr<Notification> noti)
 {
@@ -167,23 +167,34 @@ std::shared_ptr<Notification> objectList::getChangeNoti()
     return changeNoti;
 }
 
-/*void objectList::setObjectParent(int sonId,int parId)
+void objectList::setObjectParent(int sonId,int parId)
 {
     int faHeight;
-    for(auto &i:list)
+    for(auto &i:*listPtr)
     {
-        if(i->id==parId)
+        if(*(i->id)==parId)
         {
             i->setSubObject(sonId);
-            faHeight=i->getObjectDepth();
+            faHeight=*(i->getObjectDepth());
         }
     }
-    for(auto &i:list)
+    for(auto &i:*listPtr)
     {
-        if(i->id==sonId)
+        if(*(i->id)==sonId)
         {
             i->setObjectParent(parId,faHeight);
         }
     }
     changeNoti->type=NOTIFI_ATTR_CHANGED;
-}*/
+}
+
+void objectList::setNewObject(int id)
+{
+    std::shared_ptr<object> newObject=std::make_shared<object>();
+    *(newObject->id)=id;
+}
+
+std::shared_ptr<std::vector<std::shared_ptr<object> > > objectList::getListPtr()
+{
+    return listPtr;
+}

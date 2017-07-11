@@ -9,7 +9,7 @@
 
 class object
 {
-friend bool cmp(const object* x,const object* y);
+friend bool cmp(const std::shared_ptr<object> x,const std::shared_ptr<object> y);
 friend class objectList;
 protected:
      std::shared_ptr<int> x;
@@ -25,6 +25,10 @@ protected:
      std::vector<int> subObject;
      std::shared_ptr<Notification> changeNoti;
      std::shared_ptr<QString> text;
+     //给object增加一个子节点
+     void setSubObject(int id);
+     //设置object的父亲与深度
+     void setObjectParent(int parent,int parentDepth);
 public:
      object();
      virtual ~object()=default;
@@ -46,25 +50,25 @@ public:
      void setObjectText(QString text);
      std::shared_ptr<QString> getObjectText();
      std::shared_ptr<Notification> getChangeNoti();
-     void setSubObject(int id);
-     void setObjectParent(int parent,int parentDepth);
 };
 
 class objectList
 {
 private:
-     std::shared_ptr<std::vector<object*> > listPtr;
+     std::shared_ptr<std::vector<std::shared_ptr<object> > > listPtr;
      std::shared_ptr<Notification> changeNoti;
 public:
      objectList();
      virtual ~objectList()=default;
-     std::shared_ptr<std::vector<object*> > getListPtr();
+     std::shared_ptr<std::vector<std::shared_ptr<object> > > getListPtr();
      //对所有的元素进行排序，使其可以直接被painter顺序调用
      void sort();
      //通过偏移量来移动object和object的子树
      void setObjectPosOff(int id,int x,int y);
      //通过指定儿子和父亲的id,来设置某个元素的父亲
      void setObjectParent(int sonId,int parId);
+     //new 一个新的object放到list中
+     void setNewObject(int id);
      void setChangeNoti(const std::shared_ptr<Notification> noti);
      std::shared_ptr<Notification> getChangeNoti();
 };
